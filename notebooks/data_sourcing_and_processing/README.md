@@ -1,4 +1,4 @@
-## Data Sourcing and Processing
+# Data Sourcing and Processing
 
 The focus of these notebooks is to leverage [Google Earth Engine](https://earthengine.google.com/) APIs to retrieve satellite imagery data from majorly two satellites:
 
