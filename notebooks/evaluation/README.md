@@ -36,31 +36,27 @@ and many more! The idea here is to evaluate our predictions against the actuals 
 
 <br>
 
-1.  [tif_exporter_moving_square.ipynb](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/tif_exporter_moving_square.ipynb) - The notebook has the necessary workflow to enable the following:
->  - connecting to Google Earth Engine and scanning a selected geographical area \ region by setting the relevant latitude and longitude
->  - scan across a given area, shifting by 80 km<sup>2</sup> diameter downloading images from two satellite sources (landsat-8, low-resolution (LR) and sentinel-2, high resolution (HR) ) to Google Drive
->  - images with clouds and no-data pixels are discarded, and a temporal matching is done, so that only one image pair is downloaded per month, with a restriction that the images are within `max_days_apart`
+1.  [compare_image_sharpness.ipynb](https://colab.research.google.com/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/evaluation/compare_image_sharpness.ipynb) - This notebook leverages the [Cumulative Probability of Blur Detection (CPBD)](https://ivulab.asu.edu/software/cpbd/) metric to compare between predicted and actual high resolution images. This is a perceptual-based no-reference objective image sharpness metric based on the cumulative probability of blur detection developed at the [Image, Video and Usability Laboratory of Arizona State University](https://ivulab.asu.edu/Quality/CPBD).
+> This metric is based on the study of human blur perception for varying contrast values. The metric utilizes a probabilistic model to estimate the probability of detecting blur at each edge in the image, and then the information is pooled by computing the cumulative probability of blur detection (CPBD). Higher CPBD values represent sharper images. Images having small CPBD value denote blurred and noisy images.
 
 <br>
 
-2.  [tif_filtering_post_download.ipynb<sup>*</sup>](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/tif_filtering_post_download.ipynb) - This notebook is used for secondary filtering of images sourced by [tif_exporter_moving_square.ipynb](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/tif_exporter_moving_square.ipynb), to remove HR-LR image pairs where at least one of the images has cloud content or missing data. The idea is to make sure good images are going into training. Key features include:
->  - check pixel values in terms of percentiles for cloud filtering, using cloud scores and not downloading images having cloud score above a threshold
->  - some images have blackouts so use lowest percentile (10%ile) to take out bad images
->  - filtering also takes into account images from landsat and sentinel is captured within 7 (or `max_days_apart`) days to get as clean images as possible
+2.  [get_image_similarity_sewar.ipynb](https://colab.research.google.com/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/evaluation/get_image_similarity_sewar.ipynb) - This notebook gets image similarity metrics between reference HR images (sentinel) and SR images (model predictions). It uses the [sewar](https://github.com/andrewekhalel/sewar) open-source framework. 
 
 <br>
 
-3.  [tif_manual_filtering.ipynb<sup>*</sup>](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/tif_manual_filtering.ipynb) - This notebook is used for final filtering of images sourced by [tif_exporter_moving_square.ipynb](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/tif_exporter_moving_square.ipynb), and filtered with [tif_filtering_post_download.ipynb](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/tif_filtering_post_download.ipynb), to visually check and remove HR-LR image pairs where at least one of the images has cloud content or missing data.
+3.  [get_image_similarity_up42.ipynb](https://colab.research.google.com/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/evaluation/get_image_similarity_up42.ipynb) - This notebook gets image similarity metrics between reference HR images (sentinel) and SR images (model predictions). It uses the [op42](https://github.com/up42/image-similarity-measures) open-source framework.
 
 <br>
 
-4.  [tif_pairwise_plotter.ipynb](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/tif_pairwise_plotter.ipynb) - This notebook is for plotting of high-resolution sentinel and low-resolution landsat image pairs that have been downloaded from Google Earth Engine as TIF files. Different scaling is applied to sentinel and landsat pixel values to equalize image brightness and adjust for the different data ranges of the original files. For non-filtered data, cloud and missing-data pixel filters can be applied to only plot high-quality images.
+4.  [model_image_comparision.ipynb](https://colab.research.google.com/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/evaluation/model_image_comparision.ipynb) - The purpose of this notebook is to visualize model predictions for a sample image side-by-side, comparing to high-resolution ground truth and low-resolution baseline or model predictions manually.
 
 <br>
 
-8. [GDAL_transformer_PNG.ipynb<sup>*</sup>](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/GDAL_transformer_PNG.ipynb) - This notebook is used for converting TIF files sourced from Google Earth Engine into PNG files, and processed with [GDAL_transformer_manual_strech.ipynb](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/GDAL_transformer_manual_strech.ipynb), with resizing to ensure same image dimensions.
+### Sample Results
 
+The following visual shows a comparative analysis of the [Cumulative Probability of Blur Detection (CPBD)](https://ivulab.asu.edu/software/cpbd/) metric across multiple super resolution models on our satellite data.
 
-<br>
+![](https://i.imgur.com/CiOw1CN.png)
 
-_<b>* Large file alert!</b> Please use [NBViewer](https://nbviewer.org/) to view these notebooks instead of direct GitHub. Links already created and embedded here for convenience._
+The EDSR + SRGAN fine-tuned models definitely show more promise than the other models!
