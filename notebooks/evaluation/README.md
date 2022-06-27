@@ -1,36 +1,38 @@
-# Data Sourcing and Processing
+# Model Evaluation
 
-The focus of these notebooks is to leverage [Google Earth Engine](https://earthengine.google.com/) APIs to retrieve satellite imagery data from majorly two satellites:
+The focus of these notebooks is to leverage various mathematical metrics to quantify the quality of the generated super resolution images and compare it to the gold standard reference high resolution images.
 
-- [Landsat 8](https://developers.google.com/earth-engine/datasets/catalog/LANDSAT_LC08_C01_T1_SR)
-- [Sentinel-2](https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S2_SR)
+| ![](https://i.imgur.com/Iq9EwDt.png) | 
+|:--:| 
+| *Source: https://blog.eyewire.org/behind-the-science-about-the-data/* |
 
-### Landsat 8
+Leverages open-source frameworks like [cpbd](https://pypi.org/project/cpbd/), [sewar](https://github.com/andrewekhalel/sewar) and [up42](https://github.com/up42/image-similarity-measures) to assess similarity between ( generated super-resolution (SR) image - reference high-resolution (HR) ) image pairs. There are a variety of metrics available which include:
 
-<a target="_blank" href="#">
-  <img src="https://i.imgur.com/ojkQ4D5.png" width="130" align="left"/>
-</a> 
+- [Cumulative Probability of Blur Detection (CPBD)](https://ivulab.asu.edu/software/cpbd/)
+- [Mean Squared Error (MSE)](https://en.wikipedia.org/wiki/Mean_squared_error) 
+- [Root Mean Sqaured Error (RMSE)](https://en.wikipedia.org/wiki/Root-mean-square_deviation)
+- [Peak Signal-to-Noise Ratio (PSNR)](https://ieeexplore.ieee.org/abstract/document/1284395/)
+- [Structural Similarity Index (SSIM)](https://ieeexplore.ieee.org/abstract/document/1284395/)
+- [Universal Quality Image Index (UQI)](https://ieeexplore.ieee.org/document/995823/)
+- [Multi-scale Structural Similarity Index (MS-SSIM)](https://ieeexplore.ieee.org/abstract/document/1292216/)
+- [Erreur Relative Globale Adimensionnelle de Synthèse (ERGAS)](https://hal.archives-ouvertes.fr/hal-00395027/)
+- [Spatial Correlation Coefficient (SCC)](https://www.tandfonline.com/doi/abs/10.1080/014311698215973)
+- [Relative Average Spectral Error (RASE)](https://ieeexplore.ieee.org/document/1304896/)
+- [Spectral Angle Mapper (SAM)](https://ntrs.nasa.gov/search.jsp?R=19940012238)
+- [Spectral Distortion Index (D_lambda)](https://www.ingentaconnect.com/content/asprs/pers/2008/00000074/00000002/art00003)
+- [Spatial Distortion Index (D_S)](https://www.ingentaconnect.com/content/asprs/pers/2008/00000074/00000002/art00003)
+- [Quality with No Reference (QNR)](https://www.ingentaconnect.com/content/asprs/pers/2008/00000074/00000002/art00003)
+- [Visual Information Fidelity (VIF)](https://ieeexplore.ieee.org/abstract/document/1576816/)
+- [Block Sensitive - Peak Signal-to-Noise Ratio (PSNR-B)](https://ieeexplore.ieee.org/abstract/document/5535179/)
+- [Feature-based similarity index (FSIM)](https://www4.comp.polyu.edu.hk/~cslzhang/IQA/TIP_IQA_FSIM.pdf)
+- [Information theoretic-based Statistic Similarity Measure (ISSM)](https://www.tandfonline.com/doi/full/10.1080/22797254.2019.1628617)
+- [Signal to reconstruction error ratio (SRE)](https://www.sciencedirect.com/science/article/abs/pii/S0924271618302636)
 
-This dataset is the atmospherically corrected surface reflectance from the Landsat 8 OLI/TIRS sensors. These images contain 5 visible and near-infrared (VNIR) bands and 2 short-wave infrared (SWIR) bands processed to orthorectified surface reflectance, and two thermal infrared (TIR) bands processed to orthorectified brightness temperature. These data have been atmospherically corrected using LaSRC and includes a cloud, shadow, water and snow mask produced using CFMASK, as well as a per-pixel saturation mask.
-
-
-### Sentinel-2
-
-<a target="_blank" href="#">
-  <img src="https://i.imgur.com/Rvw7f51.png" width="130" align="left"/>
-</a> 
-
-Sentinel-2 is a wide-swath, high-resolution, multi-spectral imaging mission supporting Copernicus Land Monitoring studies, including the monitoring of vegetation, soil and water cover, as well as observation of inland waterways and coastal areas. The Sentinel-2 L2 data are downloaded from scihub. They were computed by running sen2cor. WARNING: ESA did not produce L2 data for all L1 assets, and earlier L2 coverage is not global. The assets contain 12 UINT16 spectral bands representing SR scaled by 10000 (unlike in L1 data, there is no B10). There are also several more L2-specific bands. In addition, three QA bands are present where one (QA60) is a bitmask band with cloud mask information.
-
-Google Earth Engine combines a multi-petabyte catalog of satellite imagery and geospatial datasets with planetary-scale analysis capabilities. Scientists, researchers, and developers use Earth Engine to detect changes, map trends, and quantify differences on the Earth's surface. Earth Engine is now available for commercial use, and remains free for academic and research use.
-
-![](https://i.imgur.com/Bd5Y7ze.png)
-
-__Note:__ Remember the focus here is to leverage Landsat data as inputs which are satellite images of low resolution and Sentinel-2 data as output (gold standard) references, which are satellite images of high resolution.
+and many more! The idea here is to evaluate our predictions against the actuals by using some of these metrics.
 
 <br>
 
-### Notebooks for Data Sourcing and Processing Pipelines
+### Notebooks for Model Evaluation
 
 <br>
 
@@ -53,22 +55,6 @@ __Note:__ Remember the focus here is to leverage Landsat data as inputs which ar
 <br>
 
 4.  [tif_pairwise_plotter.ipynb](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/tif_pairwise_plotter.ipynb) - This notebook is for plotting of high-resolution sentinel and low-resolution landsat image pairs that have been downloaded from Google Earth Engine as TIF files. Different scaling is applied to sentinel and landsat pixel values to equalize image brightness and adjust for the different data ranges of the original files. For non-filtered data, cloud and missing-data pixel filters can be applied to only plot high-quality images.
-
-<br>
-
-5.  [final_dataset_rename_files.ipynb](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/final_dataset_rename_files.ipynb) - This notebook is used for renaming the image files sourced with [tif_exporter_moving_square.ipynb](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/tif_exporter_moving_square.ipynb), so that each HR-LR image pair has a unique index.
-
-<br>
-
-6.  [train_val_split.ipynb](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/train_val_split.ipynb) - This notebook is used for splitting the sourced image files into training and validation datasets.
-
-<br>
-
-7. [GDAL_transformer_manual_strech.ipynb](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/GDAL_transformer_manual_strech.ipynb) - This notebook is used to resize and scale the landsat and sentinel TIF images downloaded from Google Earth Engine, plotting the results. The output is to be used by [GDAL_transformer_PNG.ipynb](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/GDAL_transformer_PNG.ipynb). Key features include:
->  - scale both landsat and sentinel images as they are very different ranges, scale them into 8 bit range
->  - adjust brightness and color temparature values
->  - resizing the images 1:3 LR:HR image sizes
->  - cropping to remove some minor pixel boundaries to enable the 1:3 ratio
 
 <br>
 
