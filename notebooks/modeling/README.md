@@ -14,7 +14,7 @@ The general workflow here is to train a deep learning model to learn relevant re
   <img src="https://i.imgur.com/JutPDZA.png" align="center"/>
 </a> 
 
-<br>
+<br><br>
 
 ## Super Resolution Model Architectures
 
@@ -42,7 +42,7 @@ Residual Dense Networks (RDN) tries to address problems of not using hierarchica
 the hierarchical features from all the convolutional layers. Specifically, the paper proposes residual dense blocks (RDBs) to extract abundant local features via dense connected convolutional layers. RDBs further allows direct connections from the state of preceding RDB to all the layers of current RDB, leading to a contiguous memory (CM) mechanism. Local feature fusion in RDB is then used to adaptively learn more effective features from preceding and current local features and stabilizes the training of wider network. After fully obtaining dense local features, the model uses global feature fusion to jointly and adaptively learn global hierarchical features
 in a holistic way. 
 
-<br>
+<br><br>
 
 ### Residual in Residual Dense Network (RRDN) with GANs
 
@@ -51,7 +51,7 @@ in a holistic way.
 <br>
 Residual in Dense Networks (RRDN) is similar to SRResNet Model which is actually used in the [SRGAN paper](https://arxiv.org/abs/1609.04802) but instead here, the basic blocks will be replaced with RRDBs - Residual in Residual Dense Blocks. The RRDBs combines multi-level residual network and dense connections. Removing BN layers has proven to increase performance. Also it helps remove unpleasant artifacts and improve generalization ability. It uses a relativisting discriminator when training with the GAN (Generative Adversarial Network), which helps preidct the probability that a real image is relatively more realistic than a fake one.
 
-<br>
+<br><br>
 
 ### Enhanced Deep Residual Networks (EDSR)
 
@@ -77,67 +77,70 @@ scales as shown in Fig. 5. from the original paper above. In their multi-scale a
 
 ### Modified SRGAN - Fine-tuning Enhanced Deep Residual Networks (EDSR)
 
-The EDSR model follows this high-level architecture (Figure 3 in mentioned paper as depicted below) is described in the paper [Enhanced Deep Residual Networks for Single Image Super-Resolution (EDSR)](https://arxiv.org/abs/1707.02921). It is a winner of the [NTIRE 2017 super-resolution challenge](http://www.vision.ee.ethz.ch/ntire17/). 
+The [SRGAN paper]() uses SRResNet as super-resolution model, a predecessor of EDSR. They proposed a generative adversarial network (GAN) for image super-resolution (SR). It was the first framework capable of inferring photo-realistic natural images for 4x upscaling factors. To achieve this, they proposed a perceptual loss function which consists of an adversarial loss and a content loss. The adversarial loss pushes their solution to the natural image manifold using a discriminator network that is trained to differentiate between the super-resolved images and original photo-realistic images. In addition, they use a content loss motivated by perceptual similarity instead of similarity in pixel space.
 
-<img src="https://i.imgur.com/xQTPeBh.png" align="center"/>
+<img src="https://i.imgur.com/GnvUsGW.png" align="center"/>
 
-The significant performance improvement in this model is due to optimization by removing unnecessary modules in conventional residual networks. Specifically, they improved the performance by employing a better ResNet structure.
+The original SRGAN architecture is depicted in Fig. 4 from the original paper as shown above. However we do NOT use the generator SRResNet model depicted in the above figure. __Instead we leverage transfer learning principles where we use a pre-trained EDSR model (mentioned earlier) and fine-tune it using the SRGAN discriminator just like a normal GAN would be trained, except here the generator is a pre-trained EDSR model. This enables us to get better results than a vanilla SRGAN model.__
 
+The SRGAN model uses a perceptual loss function composed of a content loss and an adversarial loss. The content loss compares deep features extracted from SR and HR images with a pre-trained [VGG network](https://arxiv.org/abs/1409.1556) _ϕ_.
 
+![](https://i.imgur.com/odC8NBI.png)
 
+where _ϕ<sub>l</sub>(I)_ is the feature map at layer _l_ and _H<sub>l</sub>_, _W<sub>l</sub>_ and _C<sub>l</sub>_ are the height, width and number of channels of that feature map, respectively. They also train their super-resolution model as generator _G_ in a generative adversarial network (GAN). The GAN discriminator _D_ is optimized for discriminating SR from HR images whereas the generator is optimized for generating more realistic SR images in order to fool the discriminator. They combine the generator loss depicted below
 
+![](https://i.imgur.com/mvvw7u5.png)
 
+with the content loss to a perceptual loss which is used as optimization target for super-resolution model training:
 
+![](https://i.imgur.com/ENyrWln.png)
 
-
-
-<br>
-
-### Notebooks for Data Sourcing and Processing Pipelines
-
-<br>
-
-1.  [tif_exporter_moving_square.ipynb](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/tif_exporter_moving_square.ipynb) - The notebook has the necessary workflow to enable the following:
->  - connecting to Google Earth Engine and scanning a selected geographical area \ region by setting the relevant latitude and longitude
->  - scan across a given area, shifting by 80 km<sup>2</sup> diameter downloading images from two satellite sources (landsat-8, low-resolution (LR) and sentinel-2, high resolution (HR) ) to Google Drive
->  - images with clouds and no-data pixels are discarded, and a temporal matching is done, so that only one image pair is downloaded per month, with a restriction that the images are within `max_days_apart`
+Instead of training the super-resolution model i.e. the generator from scratch in a GAN, they pre-train it with a pixel-wise loss and fine-tune the model with a perceptual loss. 
 
 <br>
 
-2.  [tif_filtering_post_download.ipynb<sup>*</sup>](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/tif_filtering_post_download.ipynb) - This notebook is used for secondary filtering of images sourced by [tif_exporter_moving_square.ipynb](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/tif_exporter_moving_square.ipynb), to remove HR-LR image pairs where at least one of the images has cloud content or missing data. The idea is to make sure good images are going into training. Key features include:
->  - check pixel values in terms of percentiles for cloud filtering, using cloud scores and not downloading images having cloud score above a threshold
->  - some images have blackouts so use lowest percentile (10%ile) to take out bad images
->  - filtering also takes into account images from landsat and sentinel is captured within 7 (or `max_days_apart`) days to get as clean images as possible
+## Notebooks for Modeling Pipelines
+
+There are a few folders which consist of necessary code to implement, train and test the above super resolution deep learning models.
 
 <br>
 
-3.  [tif_manual_filtering.ipynb<sup>*</sup>](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/tif_manual_filtering.ipynb) - This notebook is used for final filtering of images sourced by [tif_exporter_moving_square.ipynb](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/tif_exporter_moving_square.ipynb), and filtered with [tif_filtering_post_download.ipynb](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/tif_filtering_post_download.ipynb), to visually check and remove HR-LR image pairs where at least one of the images has cloud content or missing data.
+### utils
+
+Consists of general utility functions especially to handle modifications in existing libraries for training models like RDNs
+
+1.  [ISR_module_adjustments.ipynb](https://colab.research.google.com/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/modeling/utils/ISR_module_adjustments.ipynb) - The purpose of this notebook is to adjust the functions of the original ISR framework to make them compatible for working with raw TIF files sourced from Google Earth Engine. If using PNG satellite images (pre-processed with `GDAL_transformer_PNG.ipynb`), use `ISR_module_adjustments_PNG.ipynb`.<br> 
+Usage: the cells in this notebook should be copied to the training/prediction notebooks and ran at the beginning (if ISR is imported through `pip install`). Alternatively, these changes can be applied to a local ISR repo.
 
 <br>
 
-4.  [tif_pairwise_plotter.ipynb](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/tif_pairwise_plotter.ipynb) - This notebook is for plotting of high-resolution sentinel and low-resolution landsat image pairs that have been downloaded from Google Earth Engine as TIF files. Different scaling is applied to sentinel and landsat pixel values to equalize image brightness and adjust for the different data ranges of the original files. For non-filtered data, cloud and missing-data pixel filters can be applied to only plot high-quality images.
+2.  [ISR_module_adjustments_PNG.ipynb](https://colab.research.google.com/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/modeling/utils/ISR_module_adjustments_PNG.ipynb) - The purpose of this notebook is to adjust the functions of the original ISR framework to make them compatible for working with PNG satellite files sourced from Google Earth Engine and pre-processed with `GDAL_transformer_PNG.ipynb`.<br>
+Usage: the cells in this notebook should be copied to the training/prediction notebooks and ran at the beginning (if ISR is imported through `pip install`). Alternatively, these changes can be applied to a local ISR repo.
 
 <br>
 
-5.  [final_dataset_rename_files.ipynb](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/final_dataset_rename_files.ipynb) - This notebook is used for renaming the image files sourced with [tif_exporter_moving_square.ipynb](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/tif_exporter_moving_square.ipynb), so that each HR-LR image pair has a unique index.
+### training
+
+Consists of notebooks to train ISR models including RDN, RRDN, EDSR, EDSR + SRGAN
+
+1.  [ISR__training_helper.ipynb](https://colab.research.google.com/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/modeling/training/ISR__training_helper.ipynb) - The purpose of the notebook is to automatically clean up the Google Drive Trash (permanently delete contents) to prevent space shortage during training, as well as to rename the logs/weight files from datetime to hyperparameters tested, to facilitate viewing in TensorBoard.
 
 <br>
 
-6.  [train_val_split.ipynb](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/train_val_split.ipynb) - This notebook is used for splitting the sourced image files into training and validation datasets.
+2.  [ISR_training_RDN_x3_PSNR.ipynb](https://colab.research.google.com/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/modeling/training/ISR_training_RDN_x3_PSNR.ipynb) - The purpose of this notebook is to set up a RDN model from the ISR framework and train it.
 
 <br>
 
-7. [GDAL_transformer_manual_strech.ipynb](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/GDAL_transformer_manual_strech.ipynb) - This notebook is used to resize and scale the landsat and sentinel TIF images downloaded from Google Earth Engine, plotting the results. The output is to be used by [GDAL_transformer_PNG.ipynb](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/GDAL_transformer_PNG.ipynb). Key features include:
->  - scale both landsat and sentinel images as they are very different ranges, scale them into 8 bit range
->  - adjust brightness and color temparature values
->  - resizing the images 1:3 LR:HR image sizes
->  - cropping to remove some minor pixel boundaries to enable the 1:3 ratio
+3.  [ISR_training_RRDN.ipynb](https://colab.research.google.com/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/modeling/training/ISR_training_RRDN.ipynb) - The purpose of this notebook is to set up a RRDN model from the ISR framework and train it.
 
 <br>
 
-8. [GDAL_transformer_PNG.ipynb<sup>*</sup>](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/GDAL_transformer_PNG.ipynb) - This notebook is used for converting TIF files sourced from Google Earth Engine into PNG files, and processed with [GDAL_transformer_manual_strech.ipynb](https://nbviewer.org/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/data_sourcing_and_processing/GDAL_transformer_manual_strech.ipynb), with resizing to ensure same image dimensions.
-
+4.  [SRGAN_Training_L8_S2.ipynb](https://colab.research.google.com/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/modeling/training/SRGAN_Training_L8_S2.ipynb) - This notebook is used to train the EDSR model. We also save the EDSR pre-trained model and then couple it with the SRGAN architecture to fine-tune it.
 
 <br>
 
-_<b>* Large file alert!</b> Please use [NBViewer](https://nbviewer.org/) to view these notebooks instead of direct GitHub. Links already created and embedded here for convenience._
+### prediction
+
+Consists of a notebook to load a pre-trained super-resolution model and generate high resolution images from low resolution import images. Used for evaluation.
+
+1.  [ISR_prediction.ipynb](https://colab.research.google.com/github/dipanjanS/satellite-image-super-resolution/blob/master/notebooks/modeling/prediction/ISR_prediction.ipynb) - The purpose of this notebook is to create super-resolution images from a set of low-resolution images using a pre-trained ISR network.
