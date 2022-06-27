@@ -1,3 +1,19 @@
+## Data Sourcing and Processing
+
+The focus of these notebooks is to leverage [Google Earth Engine](https://earthengine.google.com/) APIs to retrieve satellite imagery data from majorly two satellites:
+
+- [Landsat 8](https://developers.google.com/earth-engine/datasets/catalog/LANDSAT_LC08_C01_T1_SR)
+- [Sentinel-2](https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S2_SR)
+
+### Landsat 8
+
+<a target="_blank" href="#">
+  <img src="https://i.imgur.com/ojkQ4D5.png" width="350" align="left"/>
+</a> 
+
+This dataset is the atmospherically corrected surface reflectance from the Landsat 8 OLI/TIRS sensors. These images contain 5 visible and near-infrared (VNIR) bands and 2 short-wave infrared (SWIR) bands processed to orthorectified surface reflectance, and two thermal infrared (TIR) bands processed to orthorectified brightness temperature. These data have been atmospherically corrected using LaSRC and includes a cloud, shadow, water and snow mask produced using CFMASK, as well as a per-pixel saturation mask.
+
+
 1. tif_exporter_moving_square - connect to google earth engine and scan a geographic area \ region by setting latitude and longitude
 can scan across a given area, shifting by 80 km2 diameter and go for a certain number of steps and source images from a particular area (mention areas)
 
