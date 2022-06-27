@@ -57,6 +57,8 @@ and many more! The idea here is to evaluate our predictions against the actuals 
 
 The following visual shows a comparative analysis of the [Cumulative Probability of Blur Detection (CPBD)](https://ivulab.asu.edu/software/cpbd/) metric across multiple super resolution models on our satellite data.
 
-![](https://i.imgur.com/CiOw1CN.png)
+| ![](https://i.imgur.com/CiOw1CN.png) | 
+|:--:| 
+| *Source: Created by Authors* |
 
 The EDSR + SRGAN fine-tuned models definitely show more promise than the other models!
