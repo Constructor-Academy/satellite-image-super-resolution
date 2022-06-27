@@ -24,7 +24,10 @@ Sentinel-2 is a wide-swath, high-resolution, multi-spectral imaging mission supp
 
 Google Earth Engine combines a multi-petabyte catalog of satellite imagery and geospatial datasets with planetary-scale analysis capabilities. Scientists, researchers, and developers use Earth Engine to detect changes, map trends, and quantify differences on the Earth's surface. Earth Engine is now available for commercial use, and remains free for academic and research use.
 
-![](https://i.imgur.com/Bd5Y7ze.png)
+| ![](https://i.imgur.com/Bd5Y7ze.png) | 
+|:--:| 
+| *Source: https://earthengine.google.com* |
+
 
 __Note:__ Remember the focus here is to leverage Landsat data as inputs which are satellite images of low resolution and Sentinel-2 data as output (gold standard) references, which are satellite images of high resolution.
 
