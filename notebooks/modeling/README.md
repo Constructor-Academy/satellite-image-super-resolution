@@ -10,9 +10,9 @@ The general workflow here is to train a deep learning model to learn relevant re
 
 <br>
 
-<a target="_blank" href="#">
-  <img src="https://i.imgur.com/JutPDZA.png" align="center"/>
-</a> 
+| ![](https://i.imgur.com/JutPDZA.png) | 
+|:--:| 
+| *Source: Created by Authors* |
 
 <br><br>
 
